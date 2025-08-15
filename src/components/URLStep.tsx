@@ -15,22 +15,19 @@ export default function URLStep({ url, loading, hasValidKeys, onUrlChange, onSub
     <div className="flex flex-col items-center justify-center min-h-[400px]">
       <div className="w-full max-w-2xl space-y-6">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full mb-4">
+          <a
+            href="https://youtube.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full mb-4 hover:bg-red-200 dark:hover:bg-red-900/30 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+            aria-label="Visit YouTube"
+          >
             <svg className="w-8 h-8 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
             </svg>
-          </div>
+          </a>
           <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-200 mb-4">
-            <a
-              href="https://youtube.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 underline transition-colors"
-              aria-label="Visit YouTube"
-            >
-              YouTube
-            </a>{" "}
-            AI
+            YouTube AI
           </h1>
           <p className="text-slate-600 dark:text-slate-400">
             Paste the URL of the YouTube video you want to analyze
