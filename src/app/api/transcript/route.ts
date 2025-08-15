@@ -1,55 +1,26 @@
-// app/api/transcript/route.ts
 import { NextResponse } from "next/server";
-import { YoutubeTranscript } from "youtube-transcript";
+import { Supadata, Transcript } from "@supadata/js";
 
-function extractVideoId(input: string): string | null {
-  try {
-    // Handle full URLs like https://www.youtube.com/watch?v=VIDEOID
-    const url = new URL(input);
-    if (url.hostname.includes("youtube.com")) {
-      // youtu.be / youtube.com/shorts / youtube.com/watch
-      if (url.pathname.startsWith("/watch")) {
-        return url.searchParams.get("v");
-      }
-      if (url.hostname === "youtu.be") {
-        return url.pathname.slice(1);
-      }
-      if (url.pathname.startsWith("/shorts/")) {
-        return url.pathname.split("/")[2] || null;
-      }
-    }
-    // Handle youtu.be short links directly passed
-    if (url.hostname === "youtu.be") {
-      return url.pathname.slice(1);
-    }
-  } catch {
-    // Not a URL, maybe the user pasted the raw video ID
-    if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
-  }
-  return null;
-}
+const supadata = new Supadata({
+  apiKey: process.env.SUPADATA_API_KEY || "",
+});
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const raw = searchParams.get("url");
-    if (!raw) {
+    const url = searchParams.get("url");
+    if (!url) {
       return NextResponse.json({ error: "Missing ?url=" }, { status: 400 });
     }
 
-    const videoId = extractVideoId(raw);
-    if (!videoId) {
-      return NextResponse.json({ error: "Could not parse video ID." }, { status: 400 });
-    }
+    const transcript: Transcript = await supadata.youtube.transcript({
+      url: url,
+      lang: "en",
+    });
 
-    // Fetch transcript (auto-selects available language; you can pass a lang code)
-    const items = await YoutubeTranscript.fetchTranscript(videoId);
-
-    if (!items || items.length === 0) {
-      return NextResponse.json({ error: "No transcript available for this video." }, { status: 404 });
-    }
-
-    const text = items.map(i => i.text).join(" ");
+    const text = Array.isArray(transcript.content)
+      ? transcript.content.map((item: any) => item.text).join(" ")
+      : transcript.content;
     return NextResponse.json({ transcript: text });
   } catch (err: any) {
     return NextResponse.json(
