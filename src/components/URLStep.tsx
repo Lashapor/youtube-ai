@@ -1,13 +1,16 @@
 import LoadingSpinner from "./LoadingSpinner";
+import ConfigButton from "./ConfigButton";
 
 type URLStepProps = {
   url: string;
   loading: boolean;
+  hasValidKeys: boolean;
   onUrlChange: (url: string) => void;
   onSubmit: () => void;
+  onConfigClick: () => void;
 };
 
-export default function URLStep({ url, loading, onUrlChange, onSubmit }: URLStepProps) {
+export default function URLStep({ url, loading, hasValidKeys, onUrlChange, onSubmit, onConfigClick }: URLStepProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px]">
       <div className="w-full max-w-2xl space-y-6">
@@ -26,6 +29,7 @@ export default function URLStep({ url, loading, onUrlChange, onSubmit }: URLStep
         </div>
 
         <div className="flex gap-3">
+          <ConfigButton onClick={onConfigClick} hasKeys={hasValidKeys} />
           <input
             id="youtube-url"
             type="url"

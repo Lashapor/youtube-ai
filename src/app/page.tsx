@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Message, Step } from "../types";
-import Header from "@/components/Header";
+import { ApiKeys, saveApiKeys, loadApiKeys, hasValidKeys } from "../utils/storage";
+import Header from "../components/Header";
 import ErrorMessage from "../components/ErrorMessage";
-import URLStep from "@/components/URLStep";
-import QuestionStep from "@/components/QuestionStep";
-import ChatInterface from "@/components/ChatInterface";
-import TranscriptModal from "@/components/TranscriptModal";
+import URLStep from "../components/URLStep";
+import QuestionStep from "../components/QuestionStep";
+import ChatInterface from "../components/ChatInterface";
+import TranscriptModal from "../components/TranscriptModal";
+import ConfigModal from "../components/ConfigModal";
 
 export default function Home() {
   const [url, setUrl] = useState("");
@@ -21,9 +23,22 @@ export default function Home() {
   const [showTranscript, setShowTranscript] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [showConfig, setShowConfig] = useState(false);
+  const [apiKeys, setApiKeys] = useState<ApiKeys>({ supadataKey: "", openaiKey: "" });
+
+  useEffect(() => {
+    const savedKeys = loadApiKeys();
+    setApiKeys(savedKeys);
+  }, []);
 
   async function handleUrlSubmit() {
     if (!url.trim()) return;
+    
+    if (!hasValidKeys(apiKeys)) {
+      setErr("Please configure your API keys first by clicking the Config button.");
+      return;
+    }
+
     setLoading(true);
     setErr("");
     setTranscript("");
@@ -46,6 +61,11 @@ export default function Home() {
 
   async function handleAskQuestion() {
     if (!transcript || !question.trim()) return;
+    
+    if (!hasValidKeys(apiKeys)) {
+      setErr("Please configure your API keys first.");
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -104,6 +124,11 @@ export default function Home() {
     setShowTranscript(false);
   }
 
+  function handleConfigSave(keys: ApiKeys) {
+    setApiKeys(keys);
+    saveApiKeys(keys);
+  }
+
   function copyTranscript() {
     navigator.clipboard.writeText(transcript);
     setCopySuccess(true);
@@ -155,8 +180,19 @@ export default function Home() {
           <URLStep
             url={url}
             loading={loading}
+            hasValidKeys={hasValidKeys(apiKeys)}
             onUrlChange={setUrl}
             onSubmit={handleUrlSubmit}
+            onConfigClick={() => setShowConfig(true)}
+          />
+        )}
+
+        {showConfig && (
+          <ConfigModal
+            isOpen={showConfig}
+            onClose={() => setShowConfig(false)}
+            onSave={handleConfigSave}
+            initialKeys={apiKeys}
           />
         )}
 
