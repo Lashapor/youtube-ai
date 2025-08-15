@@ -33,9 +33,9 @@ Question: ${question}`
 
     const answer = completion.choices[0]?.message?.content || "No answer generated";
     return NextResponse.json({ answer });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
-      { error: err?.message || "Failed to get answer from AI." },
+      { error: (err instanceof Error ? err.message : "Failed to get answer from AI.") },
       { status: 500 }
     );
   }

@@ -19,12 +19,12 @@ export async function GET(req: Request) {
     });
 
     const text = Array.isArray(transcript.content)
-      ? transcript.content.map((item: any) => item.text).join(" ")
+      ? transcript.content.map((item: { text: string }) => item.text).join(" ")
       : transcript.content;
     return NextResponse.json({ transcript: text });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
-      { error: err?.message || "Failed to fetch transcript." },
+      { error: (err instanceof Error ? err.message : "Failed to fetch transcript.") },
       { status: 500 }
     );
   }
